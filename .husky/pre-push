@@ -1,2 +1,4 @@
 #!/bin/sh
-yarn test:unit
+. "$(dirname "$0")/_/husky.sh"
+
+yarn test:ci

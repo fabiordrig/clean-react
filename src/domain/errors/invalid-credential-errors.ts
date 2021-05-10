@@ -1,6 +1,6 @@
 export class InvalidCredentialsError extends Error {
   constructor() {
-    super("Credencial invalidas");
+    super("Credenciais invalidas");
     this.name = "InvalidCredentialsError";
   }
 }
