@@ -6,38 +6,41 @@ module.exports = {
   entry: './src/main/index.tsx',
   output: {
     path: path.join(__dirname, 'public/js'),
-    file: 'bundle.js'
+    publicPath: '/public/js',
+    filename: 'bundle.js'
   },
   resolve: {
-    extensions: ['.js', '.ts', '.tsx', 'scss'],
+    extensions: ['.ts', '.tsx', '.js', 'scss'],
     alias: {
       '@': path.join(__dirname, 'src')
     }
   },
   module: {
-    rules: [{
-      test: /\ts(x?)$/,
-      loader: 'ts-loader',
-      exclude: /node_modules/
-    }, {
-      test: /\.scss$/,
-      use: [
-        {
-          loader: 'style-loader'
-        },
-        {
-          loader: 'css-loader',
-          options: {
-            modules: true
+    rules: [
+      {
+        test: /\.ts(x?)$/,
+        loader: 'ts-loader',
+        exclude: /node_modules/
+      },
+      {
+        test: /\.scss$/,
+        use: [
+          {
+            loader: 'style-loader'
+          },
+          {
+            loader: 'css-loader',
+            options: {
+              modules: true
+            }
+          },
+          {
+            loader: 'sass-loader'
           }
-        },
-        {
-          loader: 'sass-loader'
-        }
-      ]
-    }]
+        ]
+      }
+    ]
   },
-
   devServer: {
     contentBase: './public',
     writeToDisk: true,
@@ -47,8 +50,5 @@ module.exports = {
     react: 'React',
     'react-dom': 'ReactDOM'
   },
-  plugins: [
-    new CleanWebpackPlugin()
-  ]
-
+  plugins: [new CleanWebpackPlugin()]
 }
