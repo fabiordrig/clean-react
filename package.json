@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/fabiordrig/clean-react#readme",
   "devDependencies": {
+    "@testing-library/react": "^11.2.6",
     "@types/axios": "^0.14.0",
     "@types/faker": "^5.5.3",
     "@types/jest": "^26.0.23",
