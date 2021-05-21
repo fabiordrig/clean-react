@@ -2,20 +2,11 @@ import React from 'react'
 import { cleanup, fireEvent, render, RenderResult } from '@testing-library/react'
 import Login from './login'
 import faker from 'faker'
-import { Validation } from '@/presentation/protocols/validation'
+import { ValidationSpy } from '@/presentation/test/mock-validation'
 
 type SutTypes = {
   sut: RenderResult
   validationSpy: ValidationSpy
-}
-
-class ValidationSpy implements Validation {
-  errorMessage: string
-  input: object
-  validate (input: object): string {
-    this.input = input
-    return this.errorMessage
-  }
 }
 
 const makeSut = (): SutTypes => {
@@ -51,7 +42,8 @@ describe('Login Page', () => {
     const email = faker.internet.email()
     fireEvent.input(emailInput, { target: { value: email } })
 
-    expect(validationSpy.input).toEqual({ email })
+    expect(validationSpy.name).toBe('email')
+    expect(validationSpy.value).toBe(email)
   })
 
   test('Should call validation with correct password', () => {
@@ -61,6 +53,7 @@ describe('Login Page', () => {
     const password = faker.internet.password()
     fireEvent.input(passwordInput, { target: { value: password } })
 
-    expect(validationSpy.input).toEqual({ password })
+    expect(validationSpy.name).toBe('password')
+    expect(validationSpy.value).toBe(password)
   })
 })
