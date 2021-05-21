@@ -11,6 +11,8 @@ type SutTypes = {
 
 const makeSut = (): SutTypes => {
   const validationSpy = new ValidationSpy()
+  const errorMessage = faker.datatype.string()
+  validationSpy.errorMessage = errorMessage
   const sut = render(<Login validation={validationSpy}/>)
   return { sut, validationSpy }
 }
@@ -19,7 +21,8 @@ describe('Login Page', () => {
   afterEach(cleanup)
 
   test('Should render with initial state', () => {
-    const { sut: { getByTestId } } = makeSut()
+    const { sut: { getByTestId }, validationSpy } = makeSut()
+
     const spinner = getByTestId('error-wrap')
     expect(spinner.childElementCount).toBe(0)
 
@@ -27,33 +30,37 @@ describe('Login Page', () => {
     expect(button.disabled).toBe(true)
 
     const email = getByTestId('email-status')
-    expect(email.title).toBe('Campo obrigatório')
+    expect(email.title).toBe(validationSpy.errorMessage)
     expect(email.textContent).toBe('🔴')
 
     const password = getByTestId('password-status')
-    expect(password.title).toBe('Campo obrigatório')
+    expect(password.title).toBe(validationSpy.errorMessage)
     expect(password.textContent).toBe('🔴')
   })
 
-  test('Should call validation with correct email', () => {
+  test('Should show email error if validation fails', () => {
     const { sut: { getByTestId }, validationSpy } = makeSut()
+
     const emailInput = getByTestId('email')
 
     const email = faker.internet.email()
     fireEvent.input(emailInput, { target: { value: email } })
 
-    expect(validationSpy.name).toBe('email')
-    expect(validationSpy.value).toBe(email)
+    const emailStatus = getByTestId('email-status')
+
+    expect(emailStatus.title).toBe(validationSpy.errorMessage)
   })
 
-  test('Should call validation with correct password', () => {
+  test('Should show password error if validation fails', () => {
     const { sut: { getByTestId }, validationSpy } = makeSut()
+
     const passwordInput = getByTestId('password')
 
     const password = faker.internet.password()
     fireEvent.input(passwordInput, { target: { value: password } })
 
-    expect(validationSpy.name).toBe('password')
-    expect(validationSpy.value).toBe(password)
+    const passwordStatus = getByTestId('password-status')
+
+    expect(passwordStatus.title).toBe(validationSpy.errorMessage)
   })
 })
