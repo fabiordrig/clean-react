@@ -9,10 +9,10 @@ type SutTypes = {
   validationSpy: ValidationSpy
 }
 
-const makeSut = (): SutTypes => {
+const makeSut = (error?: string): SutTypes => {
   const validationSpy = new ValidationSpy()
-  const errorMessage = faker.datatype.string()
-  validationSpy.errorMessage = errorMessage
+  validationSpy.errorMessage = error
+
   const sut = render(<Login validation={validationSpy}/>)
   return { sut, validationSpy }
 }
@@ -21,7 +21,7 @@ describe('Login Page', () => {
   afterEach(cleanup)
 
   test('Should render with initial state', () => {
-    const { sut: { getByTestId }, validationSpy } = makeSut()
+    const { sut: { getByTestId }, validationSpy } = makeSut(faker.datatype.string())
 
     const spinner = getByTestId('error-wrap')
     expect(spinner.childElementCount).toBe(0)
@@ -40,6 +40,7 @@ describe('Login Page', () => {
 
   test('Should show email error if validation fails', () => {
     const { sut: { getByTestId }, validationSpy } = makeSut()
+    validationSpy.errorMessage = faker.datatype.string()
 
     const emailInput = getByTestId('email')
 
@@ -53,6 +54,7 @@ describe('Login Page', () => {
 
   test('Should show password error if validation fails', () => {
     const { sut: { getByTestId }, validationSpy } = makeSut()
+    validationSpy.errorMessage = faker.datatype.string()
 
     const passwordInput = getByTestId('password')
 
@@ -65,8 +67,8 @@ describe('Login Page', () => {
   })
 
   test('Should show valid email state if validation success', () => {
-    const { sut: { getByTestId }, validationSpy } = makeSut()
-    validationSpy.errorMessage = null
+    const { sut: { getByTestId } } = makeSut()
+
     const emailInput = getByTestId('email')
 
     const email = faker.internet.email()
@@ -79,8 +81,8 @@ describe('Login Page', () => {
   })
 
   test('Should show valid password state if validation success', () => {
-    const { sut: { getByTestId }, validationSpy } = makeSut()
-    validationSpy.errorMessage = null
+    const { sut: { getByTestId } } = makeSut()
+
     const passwordInput = getByTestId('password')
 
     const password = faker.internet.password()
@@ -93,8 +95,7 @@ describe('Login Page', () => {
   })
 
   test('Should enabled disabled if form is valid', () => {
-    const { sut: { getByTestId }, validationSpy } = makeSut()
-    validationSpy.errorMessage = null
+    const { sut: { getByTestId } } = makeSut()
 
     const emailInput = getByTestId('email')
     const email = faker.internet.email()
@@ -106,5 +107,24 @@ describe('Login Page', () => {
 
     const button = getByTestId('submit') as HTMLButtonElement
     expect(button.disabled).toBe(false)
+  })
+
+  test('Should show spinner on submit', () => {
+    const { sut: { getByTestId } } = makeSut()
+
+    const emailInput = getByTestId('email')
+    const email = faker.internet.email()
+    fireEvent.input(emailInput, { target: { value: email } })
+
+    const passwordInput = getByTestId('password')
+    const password = faker.internet.password()
+    fireEvent.input(passwordInput, { target: { value: password } })
+
+    const button = getByTestId('submit')
+
+    fireEvent.click(button)
+
+    const spinner = getByTestId('spinner')
+    expect(spinner).toBeTruthy()
   })
 })
