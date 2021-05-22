@@ -18,9 +18,9 @@ const Input: FC<Props> = (props: Props) => {
 
   const error = state[`${props.name}Error`]
 
-  const getStatus = (): string => '🔴'
+  const getStatus = (): string => error ? '🔴' : '🟢'
 
-  const getTitle = (): string => error
+  const getTitle = (): string => error || 'Tudo certo!'
 
   return (
     <div className={Styles.inputWrap}>
