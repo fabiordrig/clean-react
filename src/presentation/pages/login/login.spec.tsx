@@ -1,6 +1,8 @@
 import React from 'react'
 import faker from 'faker'
 import 'jest-localstorage-mock'
+import { Router } from 'react-router-dom'
+import { createMemoryHistory } from 'history'
 import { cleanup, fireEvent, render, RenderResult, waitFor } from '@testing-library/react'
 import Login from './login'
 import { ValidationSpy } from '@/presentation/test/mock-validation'
@@ -13,12 +15,18 @@ type SutTypes = {
   authenticationSpy: AuthenticationSpy
 }
 
+const history = createMemoryHistory()
+
 const makeSut = (error?: string): SutTypes => {
   const validationSpy = new ValidationSpy()
   const authenticationSpy = new AuthenticationSpy()
   validationSpy.errorMessage = error
 
-  const sut = render(<Login validation={validationSpy} authentication={authenticationSpy}/>)
+  const sut = render(
+  <Router history={history}>
+    <Login validation={validationSpy} authentication={authenticationSpy}/>
+  </Router>
+  )
   return { sut, validationSpy, authenticationSpy }
 }
 
@@ -233,5 +241,15 @@ describe('Login Page', () => {
     await waitFor(() => getByTestId('form'))
 
     expect(localStorage.setItem).toBeCalledWith('accessToken', authenticationSpy.account.accessToken)
+  })
+
+  test('Should go to signup page', async () => {
+    const { sut: { getByTestId } } = makeSut()
+
+    const signup = getByTestId('signup')
+    fireEvent.click(signup)
+
+    expect(history.length).toBe(2)
+    expect(history.location.pathname).toBe('/signup')
   })
 })
