@@ -3,18 +3,7 @@ import { cleanup, fireEvent, render, RenderResult } from '@testing-library/react
 import Login from './login'
 import faker from 'faker'
 import { ValidationSpy } from '@/presentation/test/mock-validation'
-import { Authentication, AuthenticationParams } from '@/domain/usecases/authentication'
-import { AccountModel } from '@/domain/models'
-import { mockAccountModel } from '@/domain/test'
-
-class AuthenticationSpy implements Authentication {
-  account = mockAccountModel()
-  params: AuthenticationParams
-  async auth (params: AuthenticationParams): Promise<AccountModel> {
-    this.params = params
-    return Promise.resolve(this.account)
-  }
-}
+import { AuthenticationSpy } from '@/presentation/test/mock-authentication'
 
 type SutTypes = {
   sut: RenderResult
@@ -161,5 +150,24 @@ describe('Login Page', () => {
       email,
       password
     })
+  })
+
+  test('Should call Authentication only once', () => {
+    const { sut: { getByTestId }, authenticationSpy } = makeSut()
+
+    const emailInput = getByTestId('email')
+    const email = faker.internet.email()
+    fireEvent.input(emailInput, { target: { value: email } })
+
+    const passwordInput = getByTestId('password')
+    const password = faker.internet.password()
+    fireEvent.input(passwordInput, { target: { value: password } })
+
+    const button = getByTestId('submit')
+
+    fireEvent.click(button)
+    fireEvent.click(button)
+
+    expect(authenticationSpy.callsCount).toBe(1)
   })
 })
