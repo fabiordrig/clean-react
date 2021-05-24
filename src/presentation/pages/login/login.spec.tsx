@@ -1,7 +1,8 @@
 import React from 'react'
+import faker from 'faker'
+import 'jest-localstorage-mock'
 import { cleanup, fireEvent, render, RenderResult, waitFor } from '@testing-library/react'
 import Login from './login'
-import faker from 'faker'
 import { ValidationSpy } from '@/presentation/test/mock-validation'
 import { AuthenticationSpy } from '@/presentation/test/mock-authentication'
 import { InvalidCredentialsError } from '@/domain/errors'
@@ -23,6 +24,9 @@ const makeSut = (error?: string): SutTypes => {
 
 describe('Login Page', () => {
   afterEach(cleanup)
+  beforeEach(() => {
+    localStorage.clear()
+  })
 
   test('Should render with initial state', () => {
     const { sut: { getByTestId }, validationSpy } = makeSut(faker.datatype.string())
@@ -209,5 +213,25 @@ describe('Login Page', () => {
     expect(mainError.textContent).toBe(error.message)
 
     expect(errorWrap.childElementCount).toBe(1)
+  })
+
+  test('Should add acessToken to localStorage on success', async () => {
+    const { sut: { getByTestId }, authenticationSpy } = makeSut()
+
+    const emailInput = getByTestId('email')
+    const email = faker.internet.email()
+    fireEvent.input(emailInput, { target: { value: email } })
+
+    const passwordInput = getByTestId('password')
+    const password = faker.internet.password()
+    fireEvent.input(passwordInput, { target: { value: password } })
+
+    const button = getByTestId('submit')
+
+    fireEvent.click(button)
+
+    await waitFor(() => getByTestId('form'))
+
+    expect(localStorage.setItem).toBeCalledWith('accessToken', authenticationSpy.account.accessToken)
   })
 })
