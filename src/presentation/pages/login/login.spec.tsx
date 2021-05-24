@@ -1,9 +1,10 @@
 import React from 'react'
-import { cleanup, fireEvent, render, RenderResult } from '@testing-library/react'
+import { cleanup, fireEvent, render, RenderResult, waitFor } from '@testing-library/react'
 import Login from './login'
 import faker from 'faker'
 import { ValidationSpy } from '@/presentation/test/mock-validation'
 import { AuthenticationSpy } from '@/presentation/test/mock-authentication'
+import { InvalidCredentialsError } from '@/domain/errors'
 
 type SutTypes = {
   sut: RenderResult
@@ -182,5 +183,31 @@ describe('Login Page', () => {
     fireEvent.submit(getByTestId('form'))
 
     expect(authenticationSpy.callsCount).toBe(0)
+  })
+
+  test('Should present error if Authentication fails', async () => {
+    const { sut: { getByTestId }, authenticationSpy } = makeSut()
+
+    const error = new InvalidCredentialsError()
+    jest.spyOn(authenticationSpy, 'auth').mockReturnValueOnce(Promise.reject(error))
+    const emailInput = getByTestId('email')
+    const email = faker.internet.email()
+    fireEvent.input(emailInput, { target: { value: email } })
+
+    const passwordInput = getByTestId('password')
+    const password = faker.internet.password()
+    fireEvent.input(passwordInput, { target: { value: password } })
+
+    const button = getByTestId('submit')
+
+    fireEvent.click(button)
+
+    const errorWrap = getByTestId('error-wrap')
+    await waitFor(() => errorWrap)
+
+    const mainError = getByTestId('main-error')
+    expect(mainError.textContent).toBe(error.message)
+
+    expect(errorWrap.childElementCount).toBe(1)
   })
 })
