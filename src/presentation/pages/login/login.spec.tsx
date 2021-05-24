@@ -170,4 +170,17 @@ describe('Login Page', () => {
 
     expect(authenticationSpy.callsCount).toBe(1)
   })
+
+  test('Should not call Authentication is form is invalid', () => {
+    const error = faker.datatype.string()
+    const { sut: { getByTestId }, authenticationSpy } = makeSut(error)
+
+    const emailInput = getByTestId('email')
+    const email = faker.internet.email()
+    fireEvent.input(emailInput, { target: { value: email } })
+
+    fireEvent.submit(getByTestId('form'))
+
+    expect(authenticationSpy.callsCount).toBe(0)
+  })
 })
