@@ -5,3 +5,10 @@ export class RequiredFieldError extends Error {
     this.name = 'RequiredFieldError'
   }
 }
+
+export class InvalidFieldError extends Error {
+  constructor () {
+    super('Valor invalido')
+    this.name = 'InvalidFieldError'
+  }
+}
