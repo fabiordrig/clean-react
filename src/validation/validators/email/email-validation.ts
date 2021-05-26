@@ -10,6 +10,6 @@ export class EmailValidation implements FieldValidation {
   constructor (readonly name: string) {}
 
   validate (value: string): Error {
-    return validateEmail(value) ? null : new InvalidFieldError()
+    return (!value || validateEmail(value)) ? null : new InvalidFieldError()
   }
 }
