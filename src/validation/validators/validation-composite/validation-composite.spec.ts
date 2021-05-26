@@ -3,31 +3,48 @@ import { FieldValidationSpy } from '@/validation/test/mock-field-validation'
 import faker from 'faker'
 import { ValidationComposite } from './validation-composite'
 
+type SutTypes = {
+  sut: ValidationComposite
+  fieldValidationsSpy: FieldValidationSpy[]
+}
+
+const field = faker.datatype.string()
+const value = faker.datatype.string()
+const mockError = faker.datatype.string()
+
+const makeSut = (): SutTypes => {
+  const fieldValidationsSpy = [new FieldValidationSpy(field), new FieldValidationSpy(field)]
+
+  const sut = new ValidationComposite(fieldValidationsSpy)
+
+  return { sut, fieldValidationsSpy }
+}
+
 describe('ValidationComposite', () => {
-  const field = faker.datatype.string()
-  const value = faker.datatype.string()
-  const mockError = faker.datatype.string()
-
   test('Should return error if any validation fails', () => {
-    const fieldValidationSpy = new FieldValidationSpy(field)
-    const fieldValidationSpy2 = new FieldValidationSpy(field)
-
-    fieldValidationSpy2.error = new Error(mockError)
-    const sut = new ValidationComposite([fieldValidationSpy, fieldValidationSpy2])
+    const { sut, fieldValidationsSpy } = makeSut()
+    fieldValidationsSpy[1].error = new Error(mockError)
 
     const error = sut.validate(field, value)
 
     expect(error).toBe(mockError)
   })
 
-  test('Should return first error if any validation fails', () => {
-    const fieldValidationSpy = new FieldValidationSpy(field)
-    const fieldValidationSpy2 = new FieldValidationSpy(field)
-    const internalError = faker.datatype.string()
-    fieldValidationSpy.error = new Error(internalError)
-    fieldValidationSpy2.error = new Error(mockError)
+  test('Should return false if validation success', () => {
+    const { sut } = makeSut()
 
-    const sut = new ValidationComposite([fieldValidationSpy, fieldValidationSpy2])
+    const error = sut.validate(field, value)
+
+    expect(error).toBeFalsy()
+  })
+
+  test('Should return first error if any validation fails', () => {
+    const { sut, fieldValidationsSpy } = makeSut()
+
+    const internalError = faker.datatype.string()
+
+    fieldValidationsSpy[1].error = new Error(mockError)
+    fieldValidationsSpy[0].error = new Error(internalError)
 
     const error = sut.validate(field, value)
 
