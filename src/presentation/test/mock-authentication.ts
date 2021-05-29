@@ -1,4 +1,5 @@
-import { AccountModel } from '@/domain/models'
+
+import { AccountModel } from '@/domain/models/account-model'
 import { mockAccountModel } from '@/domain/test'
 import { Authentication, AuthenticationParams } from '@/domain/usecases/authentication'
 
