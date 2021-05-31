@@ -1,0 +1,9 @@
+language: node_js
+node_js:
+  - 14
+branches:
+  only:
+    - master
+script:
+  - eslint 'src/**'
+  - npm run test:ci
