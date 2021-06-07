@@ -9,13 +9,15 @@ import Context from '@/presentation/contexts/form/form-context'
 import { Validation } from '@/presentation/protocols/validation'
 import { Authentication } from '@/domain/usecases/authentication'
 import { Link, useHistory } from 'react-router-dom'
+import { SaveAccessToken } from '@/domain/usecases/save-access-token'
 
 type Props = {
   validation: Validation
   authentication: Authentication
+  saveAccessToken: SaveAccessToken
 }
 
-const Login: FC<Props> = ({ validation, authentication }: Props) => {
+const Login: FC<Props> = ({ validation, authentication, saveAccessToken }: Props) => {
   const history = useHistory()
   const [state, setState] = useState({
     isLoading: false,
@@ -46,7 +48,7 @@ const Login: FC<Props> = ({ validation, authentication }: Props) => {
       })
       const account = await authentication.auth({ email: state.email, password: state.password })
 
-      localStorage.setItem('accessToken', account.accessToken)
+      await saveAccessToken.save(account.accessToken)
       history.replace('/')
     } catch (error) {
       setState({ ...state, mainError: error.message, isLoading: false })
