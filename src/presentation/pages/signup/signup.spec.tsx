@@ -35,9 +35,9 @@ describe('SignUp Component', () => {
     testChildCount(sut, 'error-wrap', 0)
     testButtonIsDisabled(sut, 'submit', true)
     testStatusForField(sut, 'name', validationError)
-    testStatusForField(sut, 'email', 'Campo obrigatório')
-    testStatusForField(sut, 'password', 'Campo obrigatório')
-    testStatusForField(sut, 'passwordConfirmation', 'Campo obrigatório')
+    testStatusForField(sut, 'email', validationError)
+    testStatusForField(sut, 'password', validationError)
+    testStatusForField(sut, 'passwordConfirmation', validationError)
   })
 
   test('Should show name error if Validation fails', () => {
@@ -45,5 +45,56 @@ describe('SignUp Component', () => {
     const { sut } = makeSut({ validationError })
     populateField(sut, 'name')
     testStatusForField(sut, 'name', validationError)
+  })
+
+  test('Should show email error if Validation fails', () => {
+    const validationError = faker.random.words()
+    const { sut } = makeSut({ validationError })
+    populateField(sut, 'email')
+    testStatusForField(sut, 'email', validationError)
+  })
+
+  test('Should show password error if Validation fails', () => {
+    const validationError = faker.random.words()
+    const { sut } = makeSut({ validationError })
+    populateField(sut, 'password')
+    testStatusForField(sut, 'password', validationError)
+  })
+
+  test('Should show passwordConfirmation error if Validation fails', () => {
+    const validationError = faker.random.words()
+    const { sut } = makeSut({ validationError })
+    populateField(sut, 'passwordConfirmation')
+    testStatusForField(sut, 'passwordConfirmation', validationError)
+  })
+
+  test('Should show name state if Validation succeeds', () => {
+    const { sut } = makeSut()
+    populateField(sut, 'name')
+    testStatusForField(sut, 'name')
+  })
+
+  test('Should show name state if Validation succeeds', () => {
+    const { sut } = makeSut()
+    populateField(sut, 'name')
+    testStatusForField(sut, 'name')
+  })
+
+  test('Should show email state if Validation succeeds', () => {
+    const { sut } = makeSut()
+    populateField(sut, 'email')
+    testStatusForField(sut, 'email')
+  })
+
+  test('Should show password state if Validation succeeds', () => {
+    const { sut } = makeSut()
+    populateField(sut, 'password')
+    testStatusForField(sut, 'password')
+  })
+
+  test('Should show passwordConfirmation state if Validation succeeds', () => {
+    const { sut } = makeSut()
+    populateField(sut, 'passwordConfirmation')
+    testStatusForField(sut, 'passwordConfirmation')
   })
 })
