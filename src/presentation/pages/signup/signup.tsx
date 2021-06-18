@@ -32,21 +32,36 @@ const SignUp: FC<Props> = ({ validation }: Props) => {
       nameError: validation.validate('name', state.name),
       emailError: validation.validate('email', state.email),
       passwordError: validation.validate('password', state.password),
-      passwordConfirmationError: validation.validate('passwordConfirmation', state.passwordConfirmation)
+      passwordConfirmationError: validation.validate(
+        'passwordConfirmation',
+        state.passwordConfirmation
+      )
     })
   }, [state.name, state.email, state.password, state.passwordConfirmation])
+
+  const disabled = !!state.emailError ||
+  !!state.passwordError ||
+  !!state.nameError ||
+  !!state.passwordConfirmationError
 
   return (
     <div className={Styles.signup}>
       <LoginHeader />
-      <Context.Provider value={ { state, setState }}>
+      <Context.Provider value={{ state, setState }}>
         <form className={Styles.form}>
           <h2>Criar Conta</h2>
           <Input type="text" name="name" placeholder="Digite seu nome" />
           <Input type="email" name="email" placeholder="Digite seu e-mail" />
           <Input type="password" name="password" placeholder="Digite sua senha" />
           <Input type="password" name="passwordConfirmation" placeholder="Repita sua senha" />
-          <button data-testid="submit" disabled className={Styles.submit} type="submit">Entrar</button>
+          <button
+            data-testid="submit"
+            disabled={disabled}
+            className={Styles.submit}
+            type="submit"
+          >
+            Entrar
+          </button>
           <span className={Styles.link}>Voltar Para Login</span>
           <FormStatus />
         </form>
