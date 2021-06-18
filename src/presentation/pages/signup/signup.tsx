@@ -7,12 +7,14 @@ import Input from '@/presentation/components/input/input'
 import FormStatus from '@/presentation/components/form-status/form-status'
 import Context from '@/presentation/contexts/form/form-context'
 import { Validation } from '@/presentation/protocols/validation'
+import { AddAccount } from '@/domain/usecases/add-account'
 
 type Props = {
   validation: Validation
+  addAccount: AddAccount
 }
 
-const SignUp: FC<Props> = ({ validation }: Props) => {
+const SignUp: FC<Props> = ({ validation, addAccount }: Props) => {
   const [state, setState] = useState({
     isLoading: false,
     name: '',
@@ -45,11 +47,18 @@ const SignUp: FC<Props> = ({ validation }: Props) => {
   !!state.passwordConfirmationError
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
+    const { name, email, password, passwordConfirmation, isLoading } = state
+
+    if (isLoading || disabled) {
+      return
+    }
     event.preventDefault()
 
     setState({
       ...state, isLoading: true
     })
+
+    await addAccount.add({ name, email, password, passwordConfirmation })
   }
 
   return (

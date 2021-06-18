@@ -1,4 +1,5 @@
 import { testChildCount, testButtonIsDisabled, testStatusForField, populateField, testElementExists } from '@/presentation/test/form-helper'
+import { AddAccountSpy } from '@/presentation/test/mock-add-account'
 import { ValidationSpy } from '@/presentation/test/mock-validation'
 import { RenderResult, render, cleanup, fireEvent, waitFor } from '@testing-library/react'
 import faker from 'faker'
@@ -7,6 +8,7 @@ import SignUp from './signup'
 
 type SutTypes = {
   sut: RenderResult
+  addAccountSpy: AddAccountSpy
 }
 
 type SutParams = {
@@ -15,14 +17,16 @@ type SutParams = {
 
 const makeSut = (params?: SutParams): SutTypes => {
   const validationStub = new ValidationSpy()
+  const addAccountSpy = new AddAccountSpy()
   validationStub.errorMessage = params?.validationError
   const sut = render(
     <SignUp
       validation={validationStub}
+      addAccount={addAccountSpy}
     />
   )
   return {
-    sut
+    sut, addAccountSpy
   }
 }
 
@@ -30,8 +34,7 @@ const simulateValidSubmit = async (
   sut: RenderResult,
   email = faker.internet.email(),
   name = faker.name.findName(),
-  password = faker.internet.password(),
-  passwordConfirmation = faker.internet.password()
+  password = faker.internet.password()
 ): Promise<void> => {
   populateField(sut, 'email', email)
   populateField(sut, 'name', name)
@@ -127,5 +130,24 @@ describe('SignUp Component', () => {
     const { sut } = makeSut()
     await simulateValidSubmit(sut)
     testElementExists(sut, 'spinner')
+  })
+
+  test('Should call AddAccount with correct values', async () => {
+    const { sut, addAccountSpy } = makeSut()
+    const email = faker.internet.email()
+    const name = faker.internet.email()
+    const password = faker.internet.password()
+
+    await simulateValidSubmit(sut, email, name, password)
+    expect(addAccountSpy.params).toEqual({
+      email, password, name, passwordConfirmation: password
+    })
+  })
+
+  test('Should call AddAccount only once', async () => {
+    const { sut, addAccountSpy } = makeSut()
+    await simulateValidSubmit(sut)
+    await simulateValidSubmit(sut)
+    expect(addAccountSpy.callsCount).toBe(1)
   })
 })
