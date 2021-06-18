@@ -14,7 +14,7 @@ import { ValidationSpy } from '@/presentation/test/mock-validation'
 import { AuthenticationSpy } from '@/presentation/test/mock-authentication'
 import { InvalidCredentialsError } from '@/domain/errors'
 import { SaveAccessTokenMock } from '@/presentation/test/mock-save-access-token'
-import { populateField, testButtonIsDisabled, testChildCount, testStatusForField } from '@/presentation/test/form-helper'
+import { populateField, testButtonIsDisabled, testChildCount, testElementExists, testStatusForField } from '@/presentation/test/form-helper'
 
 type SutTypes = {
   sut: RenderResult
@@ -54,11 +54,6 @@ const simulateValidSubmit = async (
   const form = sut.getByTestId('form')
   fireEvent.submit(form)
   await waitFor(() => form)
-}
-
-const testElementExists = (sut: RenderResult, fieldName: string): void => {
-  const el = sut.getByTestId(fieldName)
-  expect(el).toBeTruthy()
 }
 
 const testElementText = (sut: RenderResult, fieldName: string, text: string): void => {
