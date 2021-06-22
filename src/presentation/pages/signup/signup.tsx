@@ -8,13 +8,17 @@ import FormStatus from '@/presentation/components/form-status/form-status'
 import Context from '@/presentation/contexts/form/form-context'
 import { Validation } from '@/presentation/protocols/validation'
 import { AddAccount } from '@/domain/usecases/add-account'
+import { SaveAccessToken } from '@/domain/usecases/save-access-token'
+import { Link, useHistory } from 'react-router-dom'
 
 type Props = {
   validation: Validation
   addAccount: AddAccount
+  saveAccessToken: SaveAccessToken
 }
 
-const SignUp: FC<Props> = ({ validation, addAccount }: Props) => {
+const SignUp: FC<Props> = ({ validation, addAccount, saveAccessToken }: Props) => {
+  const history = useHistory()
   const [state, setState] = useState({
     isLoading: false,
     name: '',
@@ -48,17 +52,22 @@ const SignUp: FC<Props> = ({ validation, addAccount }: Props) => {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
     const { name, email, password, passwordConfirmation, isLoading } = state
+    try {
+      if (isLoading || disabled) {
+        return
+      }
+      event.preventDefault()
 
-    if (isLoading || disabled) {
-      return
+      setState({
+        ...state, isLoading: true
+      })
+
+      const { accessToken } = await addAccount.add({ name, email, password, passwordConfirmation })
+      await saveAccessToken.save(accessToken)
+      history.replace('/')
+    } catch (error) {
+      setState({ ...state, mainError: error.message, isLoading: false })
     }
-    event.preventDefault()
-
-    setState({
-      ...state, isLoading: true
-    })
-
-    await addAccount.add({ name, email, password, passwordConfirmation })
   }
 
   return (
@@ -79,7 +88,7 @@ const SignUp: FC<Props> = ({ validation, addAccount }: Props) => {
           >
             Entrar
           </button>
-          <span className={Styles.link}>Voltar Para Login</span>
+          <Link replace to="/login" data-testid="login" className={Styles.link}>Voltar Para Login</Link>
           <FormStatus />
         </form>
       </Context.Provider>
