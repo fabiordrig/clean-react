@@ -1,4 +1,5 @@
 
+import { CompareFieldsValidation } from '../validators/compare-fields/compare-fields-validation'
 import { EmailValidation } from '../validators/email/email-validation'
 import { MinLengthValidation } from '../validators/min-length/min-length-validation'
 import { RequiredFieldValidation } from '../validators/required-field/required-field-validation'
@@ -14,6 +15,11 @@ describe('ValidationBuilder', () => {
     const validations = ValidationBuilder.field('field').min(3).build()
 
     expect(validations).toEqual([new MinLengthValidation('field', 3)])
+  })
+  test('Should return CompareFields', () => {
+    const validations = ValidationBuilder.field('field').sameAs('fields').build()
+
+    expect(validations).toEqual([new CompareFieldsValidation('field', 'fields')])
   })
   test('Should return EmailValidation', () => {
     const validations = ValidationBuilder.field('field').email().build()

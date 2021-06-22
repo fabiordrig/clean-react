@@ -9,7 +9,7 @@ const validateEmail = (email: string): boolean => {
 export class EmailValidation implements FieldValidation {
   constructor (readonly name: string) {}
 
-  validate (value: string): Error {
-    return (!value || validateEmail(value)) ? null : new InvalidFieldError()
+  validate (input: object): Error {
+    return (!input[this.name] || validateEmail(input[this.name])) ? null : new InvalidFieldError()
   }
 }

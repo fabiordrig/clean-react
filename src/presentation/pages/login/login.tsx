@@ -29,10 +29,12 @@ const Login: FC<Props> = ({ validation, authentication, saveAccessToken }: Props
   })
 
   useEffect(() => {
+    const { email, password, isLoading } = state
+    const formData = { email, password, isLoading }
     setState({
       ...state,
-      emailError: validation.validate('email', state.email),
-      passwordError: validation.validate('password', state.password)
+      emailError: validation.validate('email', formData),
+      passwordError: validation.validate('password', formData)
     })
   }, [state.email, state.password])
 

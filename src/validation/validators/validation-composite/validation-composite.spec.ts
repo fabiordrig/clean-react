@@ -25,7 +25,7 @@ describe('ValidationComposite', () => {
     const { sut, fieldValidationsSpy } = makeSut()
     fieldValidationsSpy[1].error = new Error(mockError)
 
-    const error = sut.validate(field, value)
+    const error = sut.validate(field, { [field]: value })
 
     expect(error).toBe(mockError)
   })
@@ -33,7 +33,7 @@ describe('ValidationComposite', () => {
   test('Should return false if validation success', () => {
     const { sut } = makeSut()
 
-    const error = sut.validate(field, value)
+    const error = sut.validate(field, { [field]: value })
 
     expect(error).toBeFalsy()
   })
@@ -46,7 +46,7 @@ describe('ValidationComposite', () => {
     fieldValidationsSpy[1].error = new Error(mockError)
     fieldValidationsSpy[0].error = new Error(internalError)
 
-    const error = sut.validate(field, value)
+    const error = sut.validate(field, { [field]: value })
 
     expect(error).toBe(internalError)
   })
