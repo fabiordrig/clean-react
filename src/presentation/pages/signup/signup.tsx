@@ -78,7 +78,7 @@ const SignUp: FC<Props> = ({ validation, addAccount, saveAccessToken }: Props) =
       <Context.Provider value={{ state, setState }}>
         <form data-testid="form" className={Styles.form} onSubmit={handleSubmit}>
           <h2>Criar Conta</h2>
-          <Input type="text" name="name" placeholder="Digite seu nome" />
+          <Input type="name" name="name" placeholder="Digite seu nome" />
           <Input type="email" name="email" placeholder="Digite seu e-mail" />
           <Input type="password" name="password" placeholder="Digite sua senha" />
           <Input type="password" name="passwordConfirmation" placeholder="Repita sua senha" />
@@ -88,7 +88,7 @@ const SignUp: FC<Props> = ({ validation, addAccount, saveAccessToken }: Props) =
             className={Styles.submit}
             type="submit"
           >
-            Entrar
+            Cadastrar
           </button>
           <Link replace to="/login" data-testid="login" className={Styles.link}>Voltar Para Login</Link>
           <FormStatus />
