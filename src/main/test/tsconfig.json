@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "baseUrl": "../node_modules",
+    "lib": [ "es2015" ],
+    "types": [
+      "cypress"
+    ]
+  },
+  "include": [
+    "../../../../node_modules/cypress",
+    "./**/*.ts"
+  ]
+}
