@@ -4,7 +4,8 @@
     "lib": [ "es2015" ],
     "types": [
       "cypress"
-    ]
+    ],
+    "esModuleInterop": true
   },
   "include": [
     "../../../../node_modules/cypress",
